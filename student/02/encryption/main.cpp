@@ -30,6 +30,12 @@ int main()
     }
     std::cout << "Enter the text to be encrypted: ";
     std::cin >> message;
+    for (std::string::size_type i = 0; i < message.length(); ++i)
+    {
+        if (message[i] < 'a' or message[i] > 'z'){
+            std::cout << "Error! The text to be encrypted must contain only lower case characters." << endl;
+            return EXIT_FAILURE;}
+    }
 
     std::cout << "Encrypted text: ";
     for (std::string::size_type i = 0; i < message.length(); ++i){
