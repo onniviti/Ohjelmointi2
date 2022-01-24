@@ -148,17 +148,19 @@ Game_board_type start_game(){
 
     while (true){
         cout << "Select start (R for random, I for input): ";
-        string command;
-        cin >> command;
-        if(command == "i" or command == "I"){
-                cin.ignore(1000, '\n');
+        string input;
+        getline(cin, input);
+        vector<string> parts = split_ignoring_quoted_delim(input, ' ');
+        string command = parts.at(0);
+        if(command == "i" or command == "I"){                
                 string line;
                 cout << "Input: ";
                 getline(cin, line);
 
                 vector<string> parts = split_ignoring_quoted_delim(line, ' ');
 
-                int i = 0;
+                // Saves the input to vector as rows by jumping index 5
+                int i = 0;               
                 vector<int> v;
                 while (true){
                     if (i == 25){
@@ -202,9 +204,7 @@ Game_board_type start_game(){
             }
             cin.ignore(1000, '\n');
             return gameboard;
-
         }
-
         else{
             continue;
         }
@@ -359,24 +359,17 @@ bool check_for_win(Game_board_type gameboard){
         v.clear();
     }
 
+    // Checks vertical rows for dubplicates of each possible number and if
+    // no duplicates total grows
     int vertical_counter = 0;
     int vertical_total = 0;
     for (int i = 0; i < 5; i++){
-        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 1) < 2){
-            vertical_counter += 1;
+        for(int j = 1; j<6;j++){
+            if (count(gameboard.at(i).begin(), gameboard.at(i).end(), j) < 2){
+                vertical_counter += 1;
+            }
         }
-        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 2) < 2){
-            vertical_counter += 1;
-        }
-        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 3) < 2){
-            vertical_counter += 1;
-        }
-        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 4) < 2){
-            vertical_counter += 1;
-        }
-        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 5) < 2){
-            vertical_counter += 1;
-        }
+
         if (vertical_counter == 5){
             vertical_total += 1;
             vertical_counter = 0;
@@ -386,23 +379,15 @@ bool check_for_win(Game_board_type gameboard){
         }
     }
 
+    // Checks horizontal rows for dubplicates of each possible number and if
+    // no duplicates total grows
     int horizontal_counter = 0;
     int horizontal_total = 0;
     for (int i = 0; i < 5; i++){
-        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 1) < 2){
-            horizontal_counter += 1;
-        }
-        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 2) < 2){
-            horizontal_counter += 1;
-        }
-        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 3) < 2){
-            horizontal_counter += 1;
-        }
-        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 4) < 2){
-            horizontal_counter += 1;
-        }
-        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 5) < 2){
-            horizontal_counter += 1;
+        for(int j = 1; j<6;j++){
+            if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), j) < 2){
+                vertical_counter += 1;
+            }
         }
         if (horizontal_counter == 5){
             horizontal_total += 1;
@@ -412,7 +397,7 @@ bool check_for_win(Game_board_type gameboard){
             horizontal_counter = 0;
         }
     }
-
+    // Checks if both rows and columns didnt have duplicates
     if (vertical_total == 5 and horizontal_total == 5){
         return 0;
     }
