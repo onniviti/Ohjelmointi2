@@ -12,6 +12,33 @@ bool palindrome_recursive(std::string s)
 
 
   // Add your implementation here
+  int first = 0;
+  int last = s.length()-1;
+
+  if (last == 1){
+      if(s[0] == s[1]){
+          return true;
+      }
+      else{
+          return false;
+      }
+  }
+
+  if ( first == last){
+      return true;
+  }
+  if (s[first] != s[last]){
+      return false;
+  }
+  if(first < last +1){
+      s = s.substr(1, s.size()-2);
+      return palindrome_recursive(s);
+  }
+  return true;
+
+
+
+
 }
 
 // Do not modify rest of the code, or the automated testing won't work.
