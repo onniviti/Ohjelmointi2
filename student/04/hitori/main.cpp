@@ -81,6 +81,7 @@ unsigned int stoi_with_check(const string& str)
     }
 }
 
+
 // Splits the given string str into parts separated by the given delimiter
 // and returns the parts in a vector.
 // If the delimiter appears inside quatation, ignores delimiter,
@@ -113,12 +114,6 @@ std::vector<std::string> split_ignoring_quoted_delim(const std::string& str,
 }
 
 
-
-
-
-
-// Tulostaa pelilaudan rivi- ja sarakenumeroineen.
-//
 // Prints the game board with row and column numbers.
 void print(const Game_board_type& gameboard)
 {
@@ -144,25 +139,23 @@ void print(const Game_board_type& gameboard)
     cout << "=================" << endl;
 }
 
+
 // Starts the game, asks for user input and fills the game_board vector with random numbers or input
 // returns filled vectors
 Game_board_type start_game(){
 
-
     Game_board_type gameboard;
 
-
     while (true){
-
         cout << "Select start (R for random, I for input): ";
         string command;
         cin >> command;
         if(command == "i" or command == "I"){
-                cin.ignore();
+                cin.ignore(1000, '\n');
                 string line;
                 cout << "Input: ";
-
                 getline(cin, line);
+
                 vector<string> parts = split_ignoring_quoted_delim(line, ' ');
 
                 int i = 0;
@@ -171,7 +164,6 @@ Game_board_type start_game(){
                     if (i == 25){
                         break;
                     }
-
                     v.push_back(stoi_with_check(parts.at(i)));
                     v.push_back(stoi_with_check(parts.at(i+1)));
                     v.push_back(stoi_with_check(parts.at(i+2)));
@@ -208,16 +200,17 @@ Game_board_type start_game(){
                 gameboard.push_back(v);
                 v.clear();
             }
+            cin.ignore(1000, '\n');
             return gameboard;
+
         }
+
         else{
             continue;
         }
-
     }
-
-
 }
+
 
 // Checks if input is out of board or for other errors in input
 bool input_check(Game_board_type gameboard,string x, string y){
@@ -245,6 +238,8 @@ bool input_check(Game_board_type gameboard,string x, string y){
 
 }
 
+
+// Checks if player loses the game with input and ends game if so
 bool check_for_lose(Game_board_type gameboard){
 
     Game_board_type check_horizontal;
@@ -259,7 +254,7 @@ bool check_for_lose(Game_board_type gameboard){
     }
 
     //Checks if there are 2 empty spaces vertically next to each other
-    for (int j = 0; j < 4;j++){
+    for (int j = 0; j < 5;j++){
         for (int i = 0; i < 4; i++){
             if (gameboard.at(j).at(i) == 0 and gameboard.at(j).at(i+1) == 0){
                 return 0;
@@ -269,7 +264,7 @@ bool check_for_lose(Game_board_type gameboard){
 
 
     //Checks if there are 2 empty spaces horizontally next to each other
-    for (int j = 0; j < 4;j++){
+    for (int j = 0; j < 5;j++){
         for (int i = 0; i < 4; i++){
             if (check_horizontal.at(j).at(i) == 0 and check_horizontal.at(j).at(i+1) == 0){
                 return 0;
@@ -277,7 +272,10 @@ bool check_for_lose(Game_board_type gameboard){
         }
     }
 
-
+    // Checks if number gets surrounded by empty spaces
+    // (En ollu varma pitääkö tässä käyttää myös tätä vektori vektori rakennetta niin käytin sitä
+    // mutta en keksinyt tätä optimaalisempaa tapaa niin tuli tosi pitkäks muuten varmaa oisin tehnyt
+    // matriisi tyyliin, mut tosiaan en tiennyt oliko pakko käyttää rakennetta)
     for (int i = 0; i < 5; i++){
         if (i == 0){
             for (int j = 0; j < 5; j++){
@@ -297,9 +295,9 @@ bool check_for_lose(Game_board_type gameboard){
                         return 0;
                     }
                 }
-
             }
         }
+
         if(i == 4){
             for (int j = 0; j< 5;j++){
                 if (j== 0){
@@ -320,6 +318,7 @@ bool check_for_lose(Game_board_type gameboard){
                 }
             }
         }
+
         if (i == 1 || i == 2|| i ==3 ){
             for (int j = 0; j< 5;j++){
                 if (j== 0){
@@ -340,24 +339,17 @@ bool check_for_lose(Game_board_type gameboard){
                         return 0;
                     }
                 }
-
             }
         }
-
     }
-
-
     return 1;
-
-
-
 }
 
-
-
-
+// Checks for win condition. If game not lost if all rows
+// and columns only contain max 1 of each number win
 bool check_for_win(Game_board_type gameboard){
     Game_board_type check_horizontal;
+    check_horizontal.clear();
     vector<int> v;
     for (int j = 0; j < 5; j++){
         for (int i = 0; i < 5; i++){
@@ -367,35 +359,73 @@ bool check_for_win(Game_board_type gameboard){
         v.clear();
     }
 
-    // Checks if horizontal lines only contain one element max 1 time
-    for (int i = 0; i < int(gameboard.at(i).size()); i++){
-        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(),i+1) > 1){
-            return 0;
+    int vertical_counter = 0;
+    int vertical_total = 0;
+    for (int i = 0; i < 5; i++){
+        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 1) < 2){
+            vertical_counter += 1;
+        }
+        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 2) < 2){
+            vertical_counter += 1;
+        }
+        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 3) < 2){
+            vertical_counter += 1;
+        }
+        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 4) < 2){
+            vertical_counter += 1;
+        }
+        if (count(gameboard.at(i).begin(), gameboard.at(i).end(), 5) < 2){
+            vertical_counter += 1;
+        }
+        if (vertical_counter == 5){
+            vertical_total += 1;
+            vertical_counter = 0;
+        }
+        else{
+            vertical_counter = 0;
         }
     }
 
-    // Checks if vertical lines only contain one element max 1 time
-    for (int i = 0; i < int(gameboard.at(i).size()); i++){
-        if (count(gameboard.at(i).begin(), gameboard.at(i).end(),i+1) > 1){
-            return 0;
+    int horizontal_counter = 0;
+    int horizontal_total = 0;
+    for (int i = 0; i < 5; i++){
+        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 1) < 2){
+            horizontal_counter += 1;
+        }
+        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 2) < 2){
+            horizontal_counter += 1;
+        }
+        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 3) < 2){
+            horizontal_counter += 1;
+        }
+        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 4) < 2){
+            horizontal_counter += 1;
+        }
+        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), 5) < 2){
+            horizontal_counter += 1;
+        }
+        if (horizontal_counter == 5){
+            horizontal_total += 1;
+            horizontal_counter = 0;
+        }
+        else{
+            horizontal_counter = 0;
         }
     }
 
-
-
-
+    if (vertical_total == 5 and horizontal_total == 5){
+        return 0;
+    }
     return 1;
 
-
-
 }
+
 
 // Taking commands and executing actions according
 void running_game(Game_board_type gameboard){
 
-    cin.ignore(1000, '\n');
-    while (true){
 
+    while (true){
         string line;
         cout << "Enter removable element (x, y): " ;
 
@@ -423,29 +453,14 @@ void running_game(Game_board_type gameboard){
                 cout << "You lost" << endl;
                 break;
             }
-            else{
-                continue;
-            }
 
-            if (check_for_win(gameboard) == 1){
-                cout << "You win" << endl;
+            if (check_for_win(gameboard) == 0){
+                cout << "You won" << endl;
                 break;
-
             }
-            else{
-                continue;
-            }
-
-
         }
-
     }
-
 }
-
-
-
-
 
 
 int main()
@@ -453,10 +468,6 @@ int main()
     Game_board_type gameboard = start_game();
     print(gameboard);
     running_game(gameboard);
-
-
-
-
 
     return 0;
 }
