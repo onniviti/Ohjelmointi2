@@ -386,7 +386,7 @@ bool check_for_win(Game_board_type gameboard){
     for (int i = 0; i < 5; i++){
         for(int j = 1; j<6;j++){
             if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(), j) < 2){
-                vertical_counter += 1;
+                horizontal_counter += 1;
             }
         }
         if (horizontal_counter == 5){
