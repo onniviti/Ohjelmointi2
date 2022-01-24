@@ -219,12 +219,28 @@ Game_board_type start_game(){
 
 }
 
+void running_game(){
 
+    while (true){
+        cin.ignore();
+        string line;
+        cout << "Enter removable element (x, y): " ;
+
+        getline(cin, line);
+        vector<string> parts = split_ignoring_quoted_delim(line, ' ');
+        if (parts.at(0) == "q" or parts.at(0) == "Q"){
+            cout << "Quitting" << endl;
+            break;
+        }
+    }
+
+}
 
 int main()
 {
     Game_board_type game_board = start_game();
     print(game_board);
+    running_game();
 
     /*
     cout << endl;
