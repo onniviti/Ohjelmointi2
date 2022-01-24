@@ -43,7 +43,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
-
+#include <algorithm>
 
 
 using namespace std;
@@ -220,16 +220,23 @@ Game_board_type start_game(){
 }
 
 // Checks if input is out of board or for other errors in input
-bool input_check(string x, string y){
+bool input_check(Game_board_type gameboard,string x, string y){
 
     if (stoi_with_check(x) == 0 or stoi_with_check(y) == 0){
+        cout << "Out of board" << endl;
         return 0;
     }
 
     else if(stoi_with_check(x) > 5 or stoi_with_check(x) < 1){
+        cout << "Out of board" << endl;
         return 0;
     }
     else if(stoi_with_check(y) > 5 or stoi_with_check(y) < 1){
+        cout << "Out of board" << endl;
+        return 0;
+    }
+    else if(gameboard.at(stoi_with_check(y)-1).at(stoi_with_check(x)-1) == 0){
+        cout << "Already removed" << endl;
         return 0;
     }
     else{
@@ -238,6 +245,73 @@ bool input_check(string x, string y){
 
 }
 
+bool check_for_lose(Game_board_type gameboard){
+
+    Game_board_type check_horizontal;
+    check_horizontal.clear();
+    vector<int> v;
+    for (int j = 0; j < 5; j++){
+        for (int i = 0; i < 5; i++){
+            v.push_back(gameboard.at(i).at(j));
+        }
+        check_horizontal.push_back(v);
+        v.clear();
+    }
+
+    //Checks if there are 2 empty spaces vertically next to each other
+    for (int i = 0; i < int(gameboard.at(i).size()-1); i++){
+        if (gameboard.at(i).at(i) == 0 and gameboard.at(i).at(i+1) == 0){
+            return 0;
+        }
+    }
+
+    //Checks if there are 2 empty spaces horizontally next to each other
+    for (int i = 0; i < int(check_horizontal.at(i).size()-1); i++){
+        if (check_horizontal.at(i).at(i) == 0 and check_horizontal.at(i).at(i+1) == 0){
+            return 0;
+        }
+    }
+    return 1;
+
+
+
+}
+
+
+
+bool check_for_win(Game_board_type gameboard){
+    Game_board_type check_horizontal;
+    vector<int> v;
+    for (int j = 0; j < 5; j++){
+        for (int i = 0; i < 5; i++){
+            v.push_back(gameboard.at(i).at(j));
+        }
+        check_horizontal.push_back(v);
+        v.clear();
+    }
+
+    // Checks if horizontal lines only contain one element max 1 time
+    for (int i = 0; i < int(gameboard.at(i).size()); i++){
+        if (count(check_horizontal.at(i).begin(), check_horizontal.at(i).end(),i+1) > 1){
+            return 0;
+        }
+    }
+
+    // Checks if vertical lines only contain one element max 1 time
+    for (int i = 0; i < int(gameboard.at(i).size()); i++){
+        if (count(gameboard.at(i).begin(), gameboard.at(i).end(),i+1) > 1){
+            return 0;
+        }
+    }
+
+
+    return 1;
+
+
+
+}
+
+// Taking commands and executing actions according
 void running_game(Game_board_type gameboard){
 
     cin.ignore(1000, '\n');
@@ -254,24 +328,35 @@ void running_game(Game_board_type gameboard){
             break;
         }
 
-
         // Error check for input
-        else if (input_check(parts.at(0),parts.at(1)) == 0){
-            cout << "Out of board" << endl;
+        else if (input_check(gameboard, parts.at(0),parts.at(1)) == 0){
             continue;
         }
 
-
+        // Removes tile according to coordinate and prints changed board
         else{
             int x = stoi_with_check(parts.at(0));
             int y = stoi_with_check(parts.at(1));
             gameboard.at(y-1).at(x-1) = 0;
             print(gameboard);
+
+            if (check_for_lose(gameboard) == 0){
+                cout << "You lost" << endl;
+                break;
+            }
+            else{
+                continue;
+            }
+
+
         }
 
     }
 
 }
+
+
+
 
 
 
