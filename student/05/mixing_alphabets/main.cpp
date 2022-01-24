@@ -20,7 +20,23 @@ int main()
         }
 
         // TODO: implement your solution here
-	
-        std::cout << word << std::endl;
+
+
+
+        if (word.size() == 1){
+            std::cout << word << std::endl;
+        }
+        else {
+            std::string::iterator alota = word.begin();
+            std::string::iterator lopeta = word.end();
+            ++alota;
+            --lopeta;
+
+            shuffle(alota, lopeta, generator);
+            std::cout << word << std::endl;
+        }
+
+
+
     }
 }
