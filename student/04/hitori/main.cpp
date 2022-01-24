@@ -219,19 +219,47 @@ Game_board_type start_game(){
 
 }
 
+bool input_check(string x, string y){
+
+    if (stoi_with_check(x) == 0 or stoi_with_check(y) == 0){
+
+        return 0;
+    }
+
+    else if(stoi_with_check(x) > 5 or stoi_with_check(x) < 1){
+        return 0;
+    }
+    else if(stoi_with_check(y) > 5 or stoi_with_check(y) < 1){
+        return 0;
+    }
+    else{
+        return 1;
+    }
+
+}
+
 void running_game(){
 
+    cin.ignore(1000, '\n');
     while (true){
-        cin.ignore();
+
         string line;
         cout << "Enter removable element (x, y): " ;
 
         getline(cin, line);
         vector<string> parts = split_ignoring_quoted_delim(line, ' ');
+        if (input_check(parts.at(0),parts.at(1)) == 0){
+            cout << "Out of board" << endl;
+            continue;
+        }
+
+
+
         if (parts.at(0) == "q" or parts.at(0) == "Q"){
             cout << "Quitting" << endl;
             break;
         }
+
     }
 
 }
