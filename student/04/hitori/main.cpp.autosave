@@ -277,7 +277,9 @@ bool check_for_lose(Game_board_type gameboard){
         }
     }
 
-
+    // Checks if number gets surrounded by empty spaces
+    // (En ollu varma pitääkö tässä käyttää myös tätä vektori vektori rakennetta niin käytin sitä
+    // mutta en keksinyt tätä optimaalisempaa tapaa niin tuli tosi pitkäks
     for (int i = 0; i < 5; i++){
         if (i == 0){
             for (int j = 0; j < 5; j++){
