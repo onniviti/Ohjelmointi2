@@ -149,7 +149,7 @@ void print(const Game_board_type& gameboard)
 Game_board_type start_game(){
 
 
-    Game_board_type game_board;
+    Game_board_type gameboard;
 
 
     while (true){
@@ -178,11 +178,11 @@ Game_board_type start_game(){
                     v.push_back(stoi_with_check(parts.at(i+3)));
                     v.push_back(stoi_with_check(parts.at(i+4)));
                     i += 5;
-                    game_board.push_back(v);
+                    gameboard.push_back(v);
                     v.clear();
                 }
 
-                return game_board;
+                return gameboard;
                 }
 
         else if (command == "r" or command == "R"){
@@ -205,10 +205,10 @@ Game_board_type start_game(){
                         count += 1;
                     }
                 }
-                game_board.push_back(v);
+                gameboard.push_back(v);
                 v.clear();
             }
-            return game_board;
+            return gameboard;
         }
         else{
             continue;
@@ -219,10 +219,10 @@ Game_board_type start_game(){
 
 }
 
+// Checks if input is out of board or for other errors in input
 bool input_check(string x, string y){
 
     if (stoi_with_check(x) == 0 or stoi_with_check(y) == 0){
-
         return 0;
     }
 
@@ -238,7 +238,7 @@ bool input_check(string x, string y){
 
 }
 
-void running_game(){
+void running_game(Game_board_type gameboard){
 
     cin.ignore(1000, '\n');
     while (true){
@@ -248,38 +248,42 @@ void running_game(){
 
         getline(cin, line);
         vector<string> parts = split_ignoring_quoted_delim(line, ' ');
-        if (input_check(parts.at(0),parts.at(1)) == 0){
+        //Quits program with command q or Q
+        if (parts.at(0) == "q" or parts.at(0) == "Q"){
+            cout << "Quitting" << endl;
+            break;
+        }
+
+
+        // Error check for input
+        else if (input_check(parts.at(0),parts.at(1)) == 0){
             cout << "Out of board" << endl;
             continue;
         }
 
 
-
-        if (parts.at(0) == "q" or parts.at(0) == "Q"){
-            cout << "Quitting" << endl;
-            break;
+        else{
+            int x = stoi_with_check(parts.at(0));
+            int y = stoi_with_check(parts.at(1));
+            gameboard.at(y-1).at(x-1) = 0;
+            print(gameboard);
         }
 
     }
 
 }
 
+
+
 int main()
 {
-    Game_board_type game_board = start_game();
-    print(game_board);
-    running_game();
+    Game_board_type gameboard = start_game();
+    print(gameboard);
+    running_game(gameboard);
 
-    /*
-    cout << endl;
-    for (unsigned int i = 0; i < size(game_board); i++){
-        for (unsigned int j = 0; j < size(game_board.at(i));j++){
-            cout << game_board.at(i).at(j);
-        }
-        cout << endl;
 
-    }
-    */
+
+
 
     return 0;
 }
