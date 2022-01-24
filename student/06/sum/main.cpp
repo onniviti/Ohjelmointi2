@@ -32,6 +32,17 @@ int sum_recursive(std::vector<int>& v){
 
 
     // Add your implementation here
+    if (v.size() <= 1){
+               return v[0];
+           }
+           else {
+               std::vector<int> slice(v.begin() + 1, v.begin()+v.size());
+               return v[0] + sum_recursive(slice); //function makes a recursive call to itself.
+           }
+
+
+
+
 }
 
 // Do not modify rest of the code, or the automated testing won't work.
@@ -43,7 +54,7 @@ int main()
     getline(std::cin, line);
     std::vector<std::string> strings = split(line, ' ', true);
     std::vector<int> integers;
-    for(const auto& s : strings){
+    for(auto s : strings){
         integers.push_back(stoi(s));
     }
 
