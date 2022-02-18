@@ -32,6 +32,7 @@ struct Player{
     int points;
 };
 
+// Used data structure to shorten function parameters
 using data_structure = std::map<std::string, std::vector<Player>>;
 
 // Casual split func, if delim char is between "'s, ignores it.
@@ -61,25 +62,16 @@ std::vector<std::string> split( const std::string& str, char delim = ';' )
     return result;
 }
 
-
-
-
 // Checks input in file
 bool check_input(std::vector <std::string>& parts){
-
     if (parts.size() != 3){
         return false;
     }
-
     for (auto& part : parts){
         if (part == ""){
             return false;
         }
     }
-
-
-
-
     return true;
 }
 
@@ -89,12 +81,55 @@ std::string touppercase(std::string string){
     return string;
 }
 
-
+// Prints all games in ASCII order
 void all_games(data_structure games){
     std::cout << "All games in alphabetical order:"<<std::endl;
-
+    std::map <std::string,std::vector < Player>>::iterator iter;
+        iter = games.begin();
+        while (iter != games.end()){
+            std::cout << iter -> first << std::endl;
+            ++ iter;
+        }
 }
 
+template <typename T>
+void print_vector(const std::vector<T> & vec, std::string sep=" ")
+{
+    for(unsigned int i = 0; i < vec.size();i++)
+    {
+        if (i == vec.size()-1){
+            std::cout<<vec.at(i)<<std::endl;
+        }
+        else{
+            std::cout<<vec.at(i)<< sep;
+        }
+
+    }
+}
+
+// Prints all players in a given game and their points in ascending order.
+void game(data_structure games, std::string name){
+    std::cout << "Game " << name << " has these scores and players, listed in ascending order:" << std::endl;
+    std::map<int , std::vector<std::string>> for_print;
+
+    for (unsigned int i = 0; i < games.at(name).size(); i++){
+        if(for_print.find(games.at(name).at(i).points) == for_print.end()){
+            for_print.insert({games.at(name).at(i).points, {games.at(name).at(i).player_name}});
+        }
+        else{
+            for_print.at(games.at(name).at(i).points).push_back(games.at(name).at(i).player_name);
+        }
+    }
+    std::map<int , std::vector<std::string>>::iterator iter;
+    iter = for_print.begin();
+    while(iter != for_print.end()){
+        std::cout << iter -> first << " : ";
+        print_vector(for_print.at(iter->first), ", ");
+        iter ++;
+    }
+}
+
+// Checks if game with given name exist in data structure
 bool check_games(data_structure games, std::string game_name){
     if(games.find(game_name) == games.end()){
         return false;
@@ -103,9 +138,6 @@ bool check_games(data_structure games, std::string game_name){
         return true;
     }
 }
-
-
-
 
 void running_program(data_structure games){
     while(true){
@@ -121,7 +153,8 @@ void running_program(data_structure games){
             break;
         }
         else if (touppercase(parts.at(0)) == "ALL_GAMES"){
-            break;
+            all_games(games);
+            continue;
         }
         else if (touppercase(parts.at(0)) == "GAME"){
             if (parts.size() < 2){
@@ -133,11 +166,27 @@ void running_program(data_structure games){
                 continue;
             }
             else{
-                std::cout << "test" << std::endl;
+                game(games, parts.at(1));
                 continue;
             }
-
-
+        }
+        else if (touppercase(parts.at(0)) == "ALL_PLAYERS"){
+            continue;
+        }
+        else if (touppercase(parts.at(0)) == "PLAYER"){
+            continue;
+        }
+        else if (touppercase(parts.at(0)) == "ADD_GAME"){
+            continue;
+        }
+        else if(touppercase(parts.at(0)) == "ADD_PLAYER"){
+            continue;
+        }
+        else if(touppercase(parts.at(0))== "REMOVE"){
+            continue;
+        }
+        else{
+            std::cout<<"Invalid input." << std::endl;
         }
 
 
