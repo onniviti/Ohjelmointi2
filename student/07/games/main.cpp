@@ -75,6 +75,28 @@ bool check_input(std::vector <std::string>& parts){
     return true;
 }
 
+// Checks if game with given name exist in data structure
+bool check_games(data_structure games, std::string game_name){
+    if(games.find(game_name) == games.end()){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+// Checks if given player exists in data structure
+bool check_player(data_structure games, std::string player_name){
+    for(std::map <std::string,std::vector <Player>>::iterator it = games.begin();
+           it != games.end(); ++it){
+           for (int i=0;i<int(games.at(it->first).size());++i){
+               if(player_name == games.at(it->first).at(i).player_name)
+                   return true;
+        }
+    }
+        return false;
+}
+
 // Turns all character in string to uppercase and returns string
 std::string touppercase(std::string string){
     std::for_each(string.begin(),string.end(), [] (char & c){ c = ::toupper(c);});
@@ -92,6 +114,7 @@ void all_games(data_structure games){
         }
 }
 
+// Prints vector separated with wanted character used in game function
 template <typename T>
 void print_vector(const std::vector<T> & vec, std::string sep=" ")
 {
@@ -129,25 +152,85 @@ void game(data_structure games, std::string name){
     }
 }
 
-// Checks if game with given name exist in data structure
-bool check_games(data_structure games, std::string game_name){
-    if(games.find(game_name) == games.end()){
-        return false;
+// Sorts in alphabetical order
+bool sort_alphabetical(std::string a, std::string b){ return a<b;}
+
+// Prints all players in alphabetical order
+void all_players(data_structure games){
+    std::cout << "All players in alphabetical order:" << std::endl;
+
+    std::vector <std::string> players;
+    for(std::map <std::string,std::vector < Player>>::iterator it = games.begin();
+           it != games.end(); ++it){
+           std::vector<Player> inVect = (*it).second;
+           for (unsigned j=0; j< inVect.size(); j++){
+               players.push_back(inVect.at(j).player_name);
+           }
+        }
+    std::sort(players.begin(), players.end(), sort_alphabetical);
+    auto end = players.end();
+    for (auto it = players.begin(); it != end; ++it){
+        end = std::remove(it +1, end, *it);
     }
-    else{
-        return true;
+    players.erase(end, players.end());
+
+    for (auto it = players.cbegin(); it != players.cend(); ++it){
+        std::cout << *it << std::endl;
     }
 }
 
+// Prints all games a given player is playing
+void player_games(data_structure games, std::string player_name){
+   std::cout << "Player "<< player_name << " playes the following games:"<< std::endl;
+   std::vector <std::string > games_played;
+   for(std::map <std::string,std::vector < Player>>::iterator it = games.begin();
+      it != games.end(); ++it){
+      std::vector<Player> inVect = it -> second;
+
+      for (unsigned j=0; j< inVect.size(); j++){
+          if (inVect.at(j).player_name == player_name){
+              games_played.push_back(it -> first);
+          }
+      }
+      }
+   std::sort(games_played.begin(),games_played.end(), sort_alphabetical);
+   for(std::string& i: games_played){
+       std::cout << i << std::endl;
+   }
+}
+
+// Checks given command according to command
+bool check_command(std::vector <std::string> parts, unsigned int size, std::string command, data_structure games){
+    if (parts.size() < size){
+        std::cout << "Error: Invalid input." << std::endl;
+        return false;
+    }
+    if (command == "GAME"){
+        if(games.find(parts.at(1)) == games.end()){
+            std::cout << "Error: Game could not be found." << std::endl;
+            return false;
+        }
+    }
+    if (command == "PLAYER"){
+        if(!check_player(games, parts.at(1))){
+            std::cout << "Error: Player could not be found." << std::endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// Programs interface, running the program
 void running_program(data_structure games){
     while(true){
         std::string line;
         std::cout << "games> ";
         getline(std::cin, line);
         std::vector<std::string> parts = split(line,' ');
-        // Checks if command is correct
-        if(parts.size() < 0){
-            std::cout << "Error: Invalid input." << std::endl;
+        // All commands with error check function when needed, all commands perform own action
+        if(!check_command(parts, 1, "", games)){
+            continue;
         }
         else if (touppercase(parts.at(0)) == "QUIT"){
             break;
@@ -157,23 +240,21 @@ void running_program(data_structure games){
             continue;
         }
         else if (touppercase(parts.at(0)) == "GAME"){
-            if (parts.size() < 2){
-                std::cout << "Error: Invalid input." << std::endl;
+            if (!check_command(parts, 2, "GAME",games)){
                 continue;
             }
-            if(games.find(parts.at(1)) == games.end()){
-                std::cout << "Error: Game could not be found." << std::endl;
-                continue;
-            }
-            else{
-                game(games, parts.at(1));
-                continue;
-            }
+            game(games, parts.at(1));
+            continue;
         }
         else if (touppercase(parts.at(0)) == "ALL_PLAYERS"){
+            all_players(games);
             continue;
         }
         else if (touppercase(parts.at(0)) == "PLAYER"){
+            if (!check_command(parts,2, "PLAYER", games)){
+                continue;
+            }
+            player_games(games, parts.at(1));
             continue;
         }
         else if (touppercase(parts.at(0)) == "ADD_GAME"){
@@ -186,7 +267,7 @@ void running_program(data_structure games){
             continue;
         }
         else{
-            std::cout<<"Invalid input." << std::endl;
+            std::cout<<"Error: Invalid input." << std::endl;
         }
 
 
