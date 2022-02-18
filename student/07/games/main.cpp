@@ -23,6 +23,16 @@
 #include <vector>
 #include <fstream>
 #include <map>
+#include <cctype>
+#include <algorithm>
+
+// Creating struct for player
+struct Player{
+    std::string player_name;
+    int points;
+};
+
+using data_structure = std::map<std::string, std::vector<Player>>;
 
 // Casual split func, if delim char is between "'s, ignores it.
 std::vector<std::string> split( const std::string& str, char delim = ';' )
@@ -51,10 +61,7 @@ std::vector<std::string> split( const std::string& str, char delim = ';' )
     return result;
 }
 
-struct Player{
-    std::string player_name;
-    int points;
-};
+
 
 
 // Checks input in file
@@ -76,6 +83,67 @@ bool check_input(std::vector <std::string>& parts){
     return true;
 }
 
+// Turns all character in string to uppercase and returns string
+std::string touppercase(std::string string){
+    std::for_each(string.begin(),string.end(), [] (char & c){ c = ::toupper(c);});
+    return string;
+}
+
+
+void all_games(data_structure games){
+    std::cout << "All games in alphabetical order:"<<std::endl;
+
+}
+
+bool check_games(data_structure games, std::string game_name){
+    if(games.find(game_name) == games.end()){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+
+
+
+void running_program(data_structure games){
+    while(true){
+        std::string line;
+        std::cout << "games> ";
+        getline(std::cin, line);
+        std::vector<std::string> parts = split(line,' ');
+        // Checks if command is correct
+        if(parts.size() < 0){
+            std::cout << "Error: Invalid input." << std::endl;
+        }
+        else if (touppercase(parts.at(0)) == "QUIT"){
+            break;
+        }
+        else if (touppercase(parts.at(0)) == "ALL_GAMES"){
+            break;
+        }
+        else if (touppercase(parts.at(0)) == "GAME"){
+            if (parts.size() < 2){
+                std::cout << "Error: Invalid input." << std::endl;
+                continue;
+            }
+            if(games.find(parts.at(1)) == games.end()){
+                std::cout << "Error: Game could not be found." << std::endl;
+                continue;
+            }
+            else{
+                std::cout << "test" << std::endl;
+                continue;
+            }
+
+
+        }
+
+
+
+    }
+}
 
 
 int main()
@@ -110,8 +178,9 @@ int main()
         else{
             games.at(game_name).push_back(player);
         }
-
-
     }
+    input_creature.close();
+
+    running_program(games);
     return EXIT_SUCCESS;
 }
