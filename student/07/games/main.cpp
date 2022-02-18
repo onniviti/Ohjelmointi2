@@ -62,6 +62,9 @@ std::vector<std::string> split( const std::string& str, char delim = ';' )
     return result;
 }
 
+// Sorts in alphabetical order
+bool sort_alphabetical(std::string a, std::string b){ return a<b;}
+
 // Checks input in file
 bool check_input(std::vector <std::string>& parts){
     if (parts.size() != 3){
@@ -87,13 +90,14 @@ bool check_games(data_structure games, std::string game_name){
 
 // Checks if given player exists in data structure
 bool check_player(data_structure games, std::string player_name){
-    for(std::map <std::string,std::vector <Player>>::iterator it = games.begin();
-           it != games.end(); ++it){
-           for (int i=0;i<int(games.at(it->first).size());++i){
-               if(player_name == games.at(it->first).at(i).player_name)
-                   return true;
+    for (auto element : games){
+        for ( int i = 0; i < int(games.at(element.first).size()); ++i){
+            if(player_name == games.at(element.first).at(i).player_name){
+                return true;
+            }
         }
     }
+
         return false;
 }
 
@@ -106,12 +110,9 @@ std::string touppercase(std::string string){
 // Prints all games in ASCII order
 void all_games(data_structure games){
     std::cout << "All games in alphabetical order:"<<std::endl;
-    std::map <std::string,std::vector < Player>>::iterator iter;
-        iter = games.begin();
-        while (iter != games.end()){
-            std::cout << iter -> first << std::endl;
-            ++ iter;
-        }
+    for (auto element : games){
+        std::cout << element.first << std::endl;
+    }
 }
 
 // Prints vector separated with wanted character used in game function
@@ -126,7 +127,6 @@ void print_vector(const std::vector<T> & vec, std::string sep=" ")
         else{
             std::cout<<vec.at(i)<< sep;
         }
-
     }
 }
 
@@ -143,39 +143,27 @@ void game(data_structure games, std::string name){
             for_print.at(games.at(name).at(i).points).push_back(games.at(name).at(i).player_name);
         }
     }
-    std::map<int , std::vector<std::string>>::iterator iter;
-    iter = for_print.begin();
-    while(iter != for_print.end()){
-        std::cout << iter -> first << " : ";
-        print_vector(for_print.at(iter->first), ", ");
-        iter ++;
+
+    for (auto element : for_print){
+        std::cout << element.first << " : ";
+        print_vector(for_print.at(element.first), ", ");
     }
 }
-
-// Sorts in alphabetical order
-bool sort_alphabetical(std::string a, std::string b){ return a<b;}
 
 // Prints all players in alphabetical order
 void all_players(data_structure games){
     std::cout << "All players in alphabetical order:" << std::endl;
-
     std::vector <std::string> players;
-    for(std::map <std::string,std::vector < Player>>::iterator it = games.begin();
-           it != games.end(); ++it){
-           std::vector<Player> inVect = (*it).second;
-           for (unsigned j=0; j< inVect.size(); j++){
-               players.push_back(inVect.at(j).player_name);
-           }
+    for (auto element : games){
+        std::vector<Player> inVect = element.second;
+        for (unsigned j=0; j< inVect.size(); j++){
+            players.push_back(inVect.at(j).player_name);
         }
-    std::sort(players.begin(), players.end(), sort_alphabetical);
-    auto end = players.end();
-    for (auto it = players.begin(); it != end; ++it){
-        end = std::remove(it +1, end, *it);
     }
-    players.erase(end, players.end());
-
-    for (auto it = players.cbegin(); it != players.cend(); ++it){
-        std::cout << *it << std::endl;
+    std::sort(players.begin(), players.end(), sort_alphabetical);
+    players.erase(unique(players.begin(), players.end()),players.end());
+    for( auto it : players){
+        std::cout << it << std::endl;
     }
 }
 
@@ -183,16 +171,14 @@ void all_players(data_structure games){
 void player_games(data_structure games, std::string player_name){
    std::cout << "Player "<< player_name << " playes the following games:"<< std::endl;
    std::vector <std::string > games_played;
-   for(std::map <std::string,std::vector < Player>>::iterator it = games.begin();
-      it != games.end(); ++it){
-      std::vector<Player> inVect = it -> second;
-
-      for (unsigned j=0; j< inVect.size(); j++){
-          if (inVect.at(j).player_name == player_name){
-              games_played.push_back(it -> first);
-          }
-      }
-      }
+   for (auto element : games){
+       std::vector<Player> inVect = element.second;
+       for (unsigned j=0; j< inVect.size(); j++){
+           if (inVect.at(j).player_name == player_name){
+               games_played.push_back(element.first);
+           }
+       }
+   }
    std::sort(games_played.begin(),games_played.end(), sort_alphabetical);
    for(std::string& i: games_played){
        std::cout << i << std::endl;
@@ -217,8 +203,18 @@ bool check_command(std::vector <std::string> parts, unsigned int size, std::stri
             return false;
         }
     }
-
     return true;
+}
+
+// Adds new game to data structure if not already in it
+void add_game(data_structure& games, std::string game_name){
+    if(games.find(game_name) == games.end()){
+        games[game_name]= {};
+        std::cout << "Game was added." << std::endl;
+    }
+    else{
+        std::cout << "Error: Already exists." << std::endl;
+    }
 }
 
 // Programs interface, running the program
@@ -258,6 +254,10 @@ void running_program(data_structure games){
             continue;
         }
         else if (touppercase(parts.at(0)) == "ADD_GAME"){
+            if (!check_command(parts, 2, "ADD_GAME",games)){
+                continue;
+            }
+            add_game(games, parts.at(1));
             continue;
         }
         else if(touppercase(parts.at(0)) == "ADD_PLAYER"){
