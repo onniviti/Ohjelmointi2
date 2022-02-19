@@ -3,7 +3,7 @@
  * EXAMPLE SOLUTION
  * ===============================
  *
- *  Acts as a game statistics with n commands:
+ * Acts as a game statistics with n commands:
  * ALL_GAMES - Prints all known game names
  * GAME <game name> - Prints all players playing the given game
  * ALL_PLAYERS - Prints all known player names
@@ -16,6 +16,12 @@
  *
  *  The data file's lines should be in format game_name;player_name;score
  * Otherwise the program execution terminates instantly (but still gracefully).
+ *
+ * Program Author
+ * Name: Onni Vitikainen
+ * Student number: H292259
+ * Username: ftonvi
+ * E-mail: onni.vitikainen@tuni.fi
  *
  * */
 #include <iostream>
@@ -78,7 +84,7 @@ bool check_input(std::vector <std::string>& parts){
     return true;
 }
 
-// Checks if game with given name exist in data structure
+// Checks if game with given name exist in data structure, returns true if yes and false if no
 bool check_games(data_structure games, std::string game_name){
     if(games.find(game_name) == games.end()){
         return false;
@@ -88,7 +94,7 @@ bool check_games(data_structure games, std::string game_name){
     }
 }
 
-// Checks if given player exists in data structure
+// Checks if given player exists in data structure, returns true if yes and false if no
 bool check_player(data_structure games, std::string player_name){
     for (auto element : games){
         for ( int i = 0; i < int(games.at(element.first).size()); ++i){
@@ -97,7 +103,6 @@ bool check_player(data_structure games, std::string player_name){
             }
         }
     }
-
         return false;
 }
 
@@ -207,13 +212,44 @@ bool check_command(std::vector <std::string> parts, unsigned int size, std::stri
 }
 
 // Adds new game to data structure if not already in it
-void add_game(data_structure& games, std::string game_name){
+void add_game(data_structure games, std::string game_name){
     if(games.find(game_name) == games.end()){
-        games[game_name]= {};
+        games.at(game_name)= {};
         std::cout << "Game was added." << std::endl;
     }
     else{
         std::cout << "Error: Already exists." << std::endl;
+    }
+}
+
+// Removes a player from all games
+void remove_player(data_structure& games, std::string player_name){
+    for(std::map <std::string,std::vector < Player>>::iterator it = games.begin();
+           it != games.end(); ++it){
+            games.at(it->first).erase(std::remove_if(games.at(it->first).begin(),
+                                                     games.at(it->first).end(),
+                                                     [&](Player const& player){
+                return player.player_name == player_name;
+            }), games.at(it->first).end());
+        }
+    std::cout << "Player was removed from all games." << std::endl;
+}
+
+// Adds new player to a game if already exist update his score
+void add_player(data_structure& games,std::string game_name, std::string player_name, int score){
+    if(!check_player(games, player_name)){
+        struct Player player = {player_name, score};
+        games.at(game_name).push_back(player);
+        std::cout<< "Player was added." << std::endl;
+    }
+    else{
+        for(int i = 0; games.at(game_name).size(); i ++){
+            if (games.at(game_name).at(i).player_name == player_name){
+                games.at(game_name).at(i).points = score;
+                std::cout<< "Player was added." << std::endl;
+                break;
+            }
+        }
     }
 }
 
@@ -261,21 +297,26 @@ void running_program(data_structure games){
             continue;
         }
         else if(touppercase(parts.at(0)) == "ADD_PLAYER"){
+            if(!check_command(parts,4, "GAME",games)){
+                continue;
+            }
+            add_player(games, parts.at(1), parts.at(2), stoi(parts.at(3)));
             continue;
         }
         else if(touppercase(parts.at(0))== "REMOVE"){
+            if(!check_command(parts, 2, "PLAYER", games)){
+                continue;
+            }
+            remove_player(games, parts.at(1));
             continue;
         }
         else{
             std::cout<<"Error: Invalid input." << std::endl;
         }
-
-
-
     }
 }
 
-
+// Main function reading file to data structure with error check and runs program
 int main()
 {
     std::string input_file = "";
