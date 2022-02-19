@@ -316,7 +316,8 @@ void running_program(data_structure games){
     }
 }
 
-// Main function reading file to data structure with error check and runs program
+// Main function reading file to data structure with error check and runs program and ends if
+// error
 int main()
 {
     std::string input_file = "";
@@ -328,7 +329,6 @@ int main()
         return EXIT_FAILURE;
     }
     std::string line;
-
 
     std::map<std::string, std::vector<Player>> games;
     while(getline(input_creature,line)){
