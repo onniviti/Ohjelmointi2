@@ -212,9 +212,9 @@ bool check_command(std::vector <std::string> parts, unsigned int size, std::stri
 }
 
 // Adds new game to data structure if not already in it
-void add_game(data_structure games, std::string game_name){
+void add_game(data_structure& games, std::string game_name){
     if(games.find(game_name) == games.end()){
-        games.at(game_name)= {};
+        games[game_name]= {};
         std::cout << "Game was added." << std::endl;
     }
     else{
