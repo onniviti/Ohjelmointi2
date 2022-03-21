@@ -47,8 +47,16 @@ void Cards::add(int id)
 void Cards::print_from_top_to_bottom(std::ostream &s)
 {
 
-    for ( auto* current = top_; current != nullptr; current = current -> next){
-        s << (*current).data << "\n";
+    if (!top_)
+        return;
+
+    auto ptr = top_;
+    auto i = 0;
+
+    while (ptr)
+    {
+        s << ++i << ": " << ptr->data << std::endl;
+        ptr = ptr->next;
     }
 
 }
