@@ -2,6 +2,7 @@
 #define QUEUE_HH
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -15,9 +16,8 @@ public:
     // Destructor that deletes all the remaining vehicles from the queue.
     ~Queue();
 
-    // If the color of traffic light is red, inserts a vehicle, the register
-    // number of which is reg, to the queue.
-    void enqueue(string const& reg);
+    // Inserts a vehicle, the register number of which is reg, to the queue.
+    void enqueue(string reg);
 
     // Switches the color of traffic light from green to red or vice versa.
     // If the new color is green, lets at least <cycle_> vehicles
@@ -30,7 +30,7 @@ public:
 
     // Prints the color of traffic light and the register numbers of those
     // cars that are waiting in the traffic light queue (if any).
-    void print() const;
+    void print();
 
 private:
     // A single vehicle, i.e. queue element
@@ -53,7 +53,6 @@ private:
     unsigned int cycle_;
 
     // You can define more private features here
-
 };
 
 #endif // QUEUE_HH
