@@ -52,6 +52,15 @@ class Cards {
     private:
       Card_data* top_;
 
+      bool is_empty() const;
+
+      Card_data* find_previous_card(int id);
+
+      Card_data* find_card(int id);
+
+      Card_data* find_bottom();
+
+
       // You can use the function below in the implementation of
       // the method print_from_bottom_to_top.
       int recursive_print(Card_data* top, std::ostream& s);
