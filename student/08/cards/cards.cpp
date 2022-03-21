@@ -82,50 +82,72 @@ bool Cards::remove(int &id)
 
 bool Cards::bottom_to_top()
 {
-    if (is_empty()){
+    if (!top_)
         return false;
+
+    if (!top_->next)
+        return true;
+
+    auto bottom_most = top_;
+    Card_data* second_to_bottom = nullptr;
+
+    for(;;)
+    {
+        const auto temp = bottom_most;
+        if (temp->next)
+            bottom_most = temp->next;
+        else
+            break;
+        second_to_bottom = temp;
     }
 
-    auto* old_top = top_;
-    Card_data* new_bottom = nullptr;
-    auto* new_top = top_;
-
-    for (;new_top -> next != nullptr; new_bottom = new_top, new_top=new_top-> next){
-
-    }
-    top_ = new_top;
-
-    if(new_top != old_top){
-        new_top ->next = old_top;
-    }
-
-    if ( new_bottom != nullptr){
-        new_bottom -> next = nullptr;}
+    bottom_most->next = top_;
+    top_ = bottom_most;
+    second_to_bottom->next = nullptr;
 
     return true;
-
-   }
+}
 
 
 bool Cards::top_to_bottom()
 {
-    if (is_empty()){
+    if (!top_)
         return false;
+
+    if (!top_->next)
+        return true;
+
+    auto bottom_most = top_;
+
+    for (;;)
+    {
+        if (bottom_most->next)
+            bottom_most = bottom_most->next;
+        else
+            break;
     }
-    auto* old_bottom = find_bottom();
-    auto* new_bottom = top_;
-    auto* new_top = top_ -> next;
-    if ( old_bottom != new_bottom){
-        old_bottom->next = new_bottom;
-    }
-    new_bottom->next = nullptr;
-    if(new_top!= nullptr){
-        top_ = new_top;
-    }
+
+    const auto new_top = top_->next;
+    top_->next = nullptr;
+    bottom_most->next = top_;
+    top_ = new_top;
+
     return true;
 }
 
 void Cards::print_from_bottom_to_top(std::ostream &s)
 {
-    s << std::endl;
+    recursive_print(top_, s);
+}
+
+int Cards::recursive_print(Card_data* top, std::ostream& s)
+{
+    if (!top->next)
+    {
+        s << "1: " << top->data << std::endl;
+        return 1;
+    }
+    const auto i = recursive_print(top->next, s) + 1;
+    s << i << ": " << top->data << std::endl;
+    return i;
 }
