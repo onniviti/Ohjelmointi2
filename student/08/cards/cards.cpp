@@ -1,133 +1,99 @@
 #include "cards.hh"
-#include <iostream>
 
+using namespace std;
 
-
-// TODO: Implement the methods here
-
-Cards::Cards():top_(nullptr){
-
-}
-
-Card_data *Cards::get_topmost()
+Cards::Cards(): top_(nullptr)
 {
-    return top_;
-}
-
-
-bool Cards::is_empty() const
-{
-    return top_ == nullptr;
-}
-
-
-
-Card_data *Cards::find_bottom()
-{
-    Card_data* current = nullptr;
-
-    for (current = top_; current != nullptr && current -> next !=nullptr;
-         current = current -> next){
-
-    }
-    return current;
 }
 
 void Cards::add(int id)
 {
-    auto* new_card = new Card_data{id, nullptr};
-    if(!is_empty()){
-
-        new_card->next = top_;
-    }
-
-    top_ = new_card;
+    top_ = new Card_data{ id, !top_ ? nullptr : top_};
 }
 
-void Cards::print_from_top_to_bottom(std::ostream &s)
+void Cards::print_from_top_to_bottom(std::ostream& s)
 {
+    if (!top_)
+        return;
 
-    for ( auto* current = top_; current != nullptr; current = current -> next){
-        s << (*current).data << "\n";
+    auto ptr = top_;
+    auto i = 0;
+
+    while (ptr)
+    {
+        s << ++i << ": " << ptr->data << std::endl;
+        ptr = ptr->next;
     }
-
 }
 
-
-
-bool Cards::remove(int &id)
+bool Cards::remove(int& id)
 {
-
-
-    if ( is_empty()){
+    if (!top_)
         return false;
-    }
-    auto* old_top = top_;
-    top_ = old_top -> next;
-    id = old_top->data;
-    delete old_top;
 
+    id = top_->data;
+    const auto to_be_removed = top_;
+    top_ = top_->next;
+    delete to_be_removed;
 
     return true;
-
-
-
 }
 
 bool Cards::bottom_to_top()
 {
-    if (is_empty()){
+    if (!top_)
         return false;
+
+    if (!top_->next)
+        return true;
+
+    auto bottom_most = top_;
+    Card_data* second_to_bottom = nullptr;
+
+    for(;;)
+    {
+        const auto temp = bottom_most;
+        if (temp->next)
+            bottom_most = temp->next;
+        else
+            break;
+        second_to_bottom = temp;
     }
 
-    auto* old_top = top_;
-    Card_data* new_bottom = nullptr;
-    auto* new_top = top_;
-
-    for (;new_top -> next != nullptr; new_bottom = new_top, new_top=new_top-> next){
-
-    }
-    top_ = new_top;
-
-    if(new_top != old_top){
-        new_top ->next = old_top;
-    }
-
-    if ( new_bottom != nullptr){
-        new_bottom -> next = nullptr;}
+    bottom_most->next = top_;
+    top_ = bottom_most;
+    second_to_bottom->next = nullptr;
 
     return true;
-
-   }
-
+}
 
 bool Cards::top_to_bottom()
 {
     if (!top_)
-            return false;
+        return false;
 
-        if (!top_->next)
-            return true;
-
-        auto bottom_most = top_;
-
-        for (;;)
-        {
-            if (bottom_most->next)
-                bottom_most = bottom_most->next;
-            else
-                break;
-        }
-
-        const auto new_top = top_->next;
-        top_->next = nullptr;
-        bottom_most->next = top_;
-        top_ = new_top;
-
+    if (!top_->next)
         return true;
+
+    auto bottom_most = top_;
+
+    for (;;)
+    {
+        if (bottom_most->next)
+            bottom_most = bottom_most->next;
+        else
+            break;
+    }
+
+    const auto new_top = top_->next;
+    top_->next = nullptr;
+    bottom_most->next = top_;
+    top_ = new_top;
+
+    return true;
 }
 
-void Cards::print_from_bottom_to_top(std::ostream &s)
+void Cards::print_from_bottom_to_top(std::ostream& s)
 {
     recursive_print(top_, s);
 }
@@ -136,11 +102,11 @@ int Cards::recursive_print(Card_data* top, std::ostream& s)
 {
     if (!top->next)
     {
-        s << "1: " << top->data << std::endl;
+        s << "1: " << top->data << endl;
         return 1;
     }
     const auto i = recursive_print(top->next, s) + 1;
-    s << i << ": " << top->data << std::endl;
+    s << i << ": " << top->data << endl;
     return i;
 }
 
@@ -158,8 +124,3 @@ Cards::~Cards()
     }
     top_ = nullptr;
 }
-
-
-
-
-
