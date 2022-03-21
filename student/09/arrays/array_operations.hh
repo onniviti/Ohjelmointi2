@@ -30,3 +30,4 @@ void copy(int* itemptr, int* endptr, int* targetptr);
 void reverse(int* leftptr, int* rightptr);
 
 #endif
+
