@@ -7,7 +7,7 @@ int main() {
     cout << "constructor" << endl;
     Cards deck;
 
-    auto n = 0;
+    int n = 0;
     cout << "Enter amount of test cards: ";
     cin >> n;
 
@@ -15,8 +15,9 @@ int main() {
     deck.print_from_top_to_bottom(cout);
 
     cout << endl << "add * n" << endl;
-    for (auto i = 0; i < n; i++)
+    for(int i = 0; i < n; i++) {
         deck.add(i);
+    }
 
     cout << endl << "print_from_top_to_bottom" << endl;
     deck.print_from_top_to_bottom(cout);
@@ -34,14 +35,14 @@ int main() {
     cout << endl << "print_from_top_to_bottom" << endl;
     deck.print_from_top_to_bottom(cout);
 
-
     cout << endl << "print_from_bottom_to_top" << endl;
     deck.print_from_bottom_to_top(cout);
 
     cout << endl;
-    auto value = 0;
-    while (deck.remove(value))
+    int value = 0;
+    while(deck.remove(value)) {
         cout << "remove " << value << endl;
+    }
 
     cout << endl << "destructor" << endl;
     return EXIT_SUCCESS;
