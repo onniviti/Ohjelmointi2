@@ -36,5 +36,6 @@ private:
     int P_points;
     int E_points;
 
+
 };
 #endif // MAINWINDOW_HH

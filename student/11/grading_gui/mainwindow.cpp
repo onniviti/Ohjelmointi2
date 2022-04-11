@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <QString>
+#include <sstream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -45,7 +46,9 @@ void MainWindow::on_spinBoxE_valueChanged(int arg1)
 void MainWindow::on_countPushButton_clicked()
 {
     std::string final_grade = std::to_string(count_final_grade(N_points, G_points, P_points, E_points));
-    QString qstr = QString::fromStdString(final_grade);
+    std::ostringstream oss;
+    oss << "Total grade: " << final_grade;
+    QString qstr = QString::fromStdString(oss.str());
     ui->textBrowser->setText(qstr);
 
 }
