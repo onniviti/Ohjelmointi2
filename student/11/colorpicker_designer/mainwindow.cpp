@@ -40,3 +40,6 @@ void MainWindow::onColorChanged()
     colorMap.fill(selectedColor);
     ui->colorLabel->setPixmap(colorMap);
 }
+
+
+
