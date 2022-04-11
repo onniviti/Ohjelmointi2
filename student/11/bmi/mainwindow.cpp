@@ -14,6 +14,10 @@ void MainWindow::count_clicked()
     const auto weight = std::stoi(ui.weightLineEdit->text().toStdString());
     const auto height = std::stoi(ui.heightLineEdit->text().toStdString());
 
+    if(weight == 0 or height == 0){
+        return;
+    }
+
     const auto bmi = weight / pow(height/100.0, 2);
 
     ui.resultLabel->setNum(bmi);
